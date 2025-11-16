@@ -5,17 +5,71 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Goku Runner - Dragon Ball Dino Game</title>
   <style>
-    body{margin:0;padding:0;display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:100vh;background:linear-gradient(to bottom,#4a90e2,#e0f6ff);font-family:'Arial Black',Arial,sans-serif;color:#333;overflow:hidden}
-    #gameContainer{position:relative;display:flex;flex-direction:column;align-items:center}
-    canvas{border:4px solid #333;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,0.3);background:#f7f7f7;cursor:pointer}
-    .hud{display:flex;justify-content:space-between;width:800px;margin-bottom:10px;font-size:24px;font-weight:bold;color:#ff6b35;text-shadow:2px 2px 4px rgba(0,0,0,0.5)}
-    .form-display{position:absolute;top:10px;left:10px;font-size:18px;color:#ffd700;text-shadow:1px 1px 2px #000;font-weight:bold}
-    @media(max-width:850px){.hud{width:100%;max-width:800px;padding:0 20px;box-sizing:border-box}canvas{max-width:100%;height:auto}}
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(to bottom, #4a90e2, #e0f6ff);
+      font-family: 'Arial Black', Arial, sans-serif;
+      color: #333;
+      overflow: hidden;
+    }
+    #gameContainer {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    canvas {
+      border: 4px solid #333;
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      background: #f7f7f7;
+      cursor: pointer;
+    }
+    .hud {
+      display: flex;
+      justify-content: space-between;
+      width: 800px;
+      margin-bottom: 10px;
+      font-size: 24px;
+      font-weight: bold;
+      color: #ff6b35;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+    .form-display {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 18px;
+      color: #ffd700;
+      text-shadow: 1px 1px 2px #000;
+      font-weight: bold;
+    }
+    @media (max-width: 850px) {
+      .hud {
+        width: 100%;
+        max-width: 800px;
+        padding: 0 20px;
+        box-sizing: border-box;
+      }
+      canvas {
+        max-width: 100%;
+        height: auto;
+      }
+    }
   </style>
 </head>
 <body>
   <div id="gameContainer">
-    <div class="hud"><div id="score">0</div><div>HI <span id="hiScore">0</span></div></div>
+    <div class="hud">
+      <div id="score">0</div>
+      <div>HI <span id="hiScore">0</span></div>
+    </div>
     <div class="form-display" id="form">Base Goku</div>
     <canvas id="canvas" width="800" height="200"></canvas>
   </div>
@@ -23,29 +77,27 @@
   <script>
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
-    ctx.imageSmoothingEnabled = false; // Crisp pixels!
     const scoreEl = document.getElementById('score');
     const hiScoreEl = document.getElementById('hiScore');
     const formEl = document.getElementById('form');
 
     const GROUND_Y = 160;
-    const PLAYER_WIDTH = 50;
-    const NORMAL_HEIGHT = 68;
-    const DUCK_HEIGHT = 34;
 
-    // Upload your sprite sheet as sprites.png and adjust these coordinates!
     const forms = [
-      {name: "Base Goku", aura: false, lightning: false, sx: 15, sy: 20, sw: 48, sh: 72}, // ← edit these
-      {name: "Super Saiyan", aura: true, lightning: false, auraColor: "#ffd70044", sx: 80, sy: 20, sw: 48, sh: 72},
-      {name: "Super Saiyan 2", aura: true, lightning: true, auraColor: "#ffd70044", sx: 145, sy: 20, sw: 48, sh: 72},
-      {name: "Super Saiyan 3", aura: true, lightning: false, auraColor: "#ffd70044", sx: 210, sy: 20, sw: 48, sh: 72},
-      {name: "Super Saiyan God", aura: true, lightning: false, auraColor: "#dc143c44", sx: 45, sy: 100, sw: 48, sh: 72},
-      {name: "Super Saiyan Blue", aura: true, lightning: false, auraColor: "#4169e144", sx: 110, sy: 100, sw: 48, sh: 72},
-      {name: "Ultra Instinct", aura: true, lightning: false, auraColor: "#c0c0c044", sx: 175, sy: 100, sw: 48, sh: 72}
+      {name: "Base Goku", src: "base.png", aura: false, lightning: false, uiEyes: false},
+      {name: "Super Saiyan", src: "ss1.png", aura: true, color: "#ffd700", lightning: false, uiEyes: false},
+      {name: "Super Saiyan 2", src: "ss2.png", aura: true, color: "#ffd700", lightning: true, uiEyes: false},
+      {name: "Super Saiyan 3", src: "ss3.png", aura: true, color: "#ffd700", lightning: false, uiEyes: false},
+      {name: "Super Saiyan God", src: "ssg.png", aura: true, color: "#dc143c", lightning: false, uiEyes: false},
+      {name: "Super Saiyan Blue", src: "ssb.png", aura: true, color: "#4169e1", lightning: false, uiEyes: false},
+      {name: "Ultra Instinct", src: "ui.png", aura: true, color: "#c0c0c0", lightning: false, uiEyes: true}
     ];
 
-    const spriteSheet = new Image();
-    spriteSheet.src = 'sprites.png'; // Your file!
+    const formImages = forms.map(f => {
+      const img = new Image();
+      img.src = f.src;
+      return img;
+    });
 
     function getCurrentForm(score) {
       if (score < 500) return 0;
@@ -62,41 +114,52 @@
     let hiScore = parseInt(localStorage.getItem('gokuHiScore') || '0');
     hiScoreEl.innerText = hiScore;
     let currentDistance = 0;
-    let speed = 6;
+    let speed = 5; // Lower starting speed for gradual increase
     let speedUps = 0;
     let gameStarted = false;
     let gameOver = false;
     let currentFormIdx = 0;
     let obTimer = 0;
-    let obGap = 150;
+    let obGap = 200; // Wider initial gap for slower start
     let groundOffset = 0;
     let clouds = [];
     let obstacles = [];
     let player = {
-      x: 50,
+      x: 80, // Adjusted for sprite size
       y: GROUND_Y,
       vy: 0,
       jumping: false,
       ducking: false,
-      animFrame: 0,
-      bob: 0
+      animFrame: 0
     };
     let keys = {};
 
+    // Initial clouds for start screen
     for (let i = 0; i < 3; i++) {
-      clouds.push({x: 120 + i * 280, y: 35 + Math.random() * 30, size: 18 + Math.random() * 16});
+      clouds.push({
+        x: 120 + i * 280,
+        y: 35 + Math.random() * 30,
+        size: 18 + Math.random() * 16
+      });
     }
 
     function collide(a, b) {
-      return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
+      return a.x < b.x + b.width &&
+             a.x + a.width > b.x &&
+             a.y < b.y + b.height &&
+             a.y + a.height > b.y;
     }
 
     function addCloud() {
-      clouds.push({x: canvas.width, y: 25 + Math.random() * 45, size: 16 + Math.random() * 20});
+      clouds.push({
+        x: canvas.width,
+        y: 25 + Math.random() * 45,
+        size: 16 + Math.random() * 20
+      });
     }
 
     function drawCloud(c) {
-      ctx.fillStyle = 'rgba(255,255,255,0.9)';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
       ctx.beginPath();
       ctx.arc(c.x, c.y, c.size, 0, 2 * Math.PI);
       ctx.arc(c.x + c.size * 0.6, c.y - c.size * 0.3, c.size * 0.8, 0, 2 * Math.PI);
@@ -106,8 +169,8 @@
     }
 
     function drawObstacle(ob) {
-      /* same as before - rocks & ki blasts */
       if (ob.type === 'ground') {
+        // Rock obstacle
         ctx.fillStyle = '#6d4c41';
         ctx.beginPath();
         ctx.roundRect(ob.x, ob.y, ob.width, ob.height, 6);
@@ -116,6 +179,7 @@
         ctx.beginPath();
         ctx.roundRect(ob.x + 3, ob.y + 5, ob.width - 6, ob.height - 10, 4);
         ctx.fill();
+        // Top spike
         ctx.fillStyle = '#5d4037';
         ctx.beginPath();
         ctx.moveTo(ob.x + ob.width / 2, ob.y);
@@ -123,25 +187,30 @@
         ctx.lineTo(ob.x + ob.width / 2 + 8, ob.y - 12);
         ctx.closePath();
         ctx.fill();
+        // Crack
         ctx.strokeStyle = '#4e342e';
         ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
         ctx.beginPath();
         ctx.moveTo(ob.x + 6, ob.y + 12);
         ctx.lineTo(ob.x + 6, ob.y + ob.height - 8);
         ctx.lineTo(ob.x + ob.width - 10, ob.y + ob.height - 12);
         ctx.stroke();
       } else {
+        // Flying ki blast
         const cx = ob.x + 20;
         const cy = ob.y + 12.5;
+        // Animated trail
         for (let i = 0; i < 5; i++) {
           const alpha = 0.6 - i * 0.12;
-          ctx.fillStyle = `rgba(255,105,180,${alpha})`;
+          ctx.fillStyle = `rgba(255, 105, 180, ${alpha})`;
           const trailX = cx - (i + 1) * 9;
           const trailY = cy + Math.sin((frame + i * 8) * 0.15) * 3;
           ctx.beginPath();
           ctx.ellipse(trailX, trailY, 5 + i * 2.5, 4 + i * 1.8, 0, 0, 2 * Math.PI);
           ctx.fill();
         }
+        // Pulsing core
         const pulse = 1 + Math.sin(frame * 0.25) * 0.15;
         ctx.save();
         ctx.translate(cx, cy);
@@ -159,111 +228,167 @@
     }
 
     function drawPlayer() {
-      const form = forms[getCurrentForm(score)];
+      const formIdx = getCurrentForm(score);
+      const form = forms[formIdx];
+      const img = formImages[formIdx];
       const isDucking = player.ducking && !player.jumping;
-      const displayHeight = isDucking ? DUCK_HEIGHT : NORMAL_HEIGHT;
-      let spriteY = player.y - displayHeight + player.bob;
-      const spriteX = player.x - PLAYER_WIDTH / 2;
+      const targetHeight = isDucking ? 40 : 60; // Adjusted for sprite sizes
+      let dx = player.x - targetHeight / 2; // Center
+      let dy = player.y - targetHeight;
 
-      // Draw sprite
-      if (spriteSheet.complete && spriteSheet.naturalWidth > 0) {
-        ctx.drawImage(spriteSheet, form.sx, form.sy, form.sw, form.sh, spriteX, spriteY, PLAYER_WIDTH, displayHeight);
+      // Simple animation: bob up/down and lean forward/back for running
+      if (gameStarted && !gameOver && !player.jumping && !isDucking) {
+        dy += Math.sin(frame * 0.25) * 3; // Bob for running
+        dx += Math.sin(frame * 0.25 + Math.PI / 2) * 2; // Lean
       }
-
-      // Overlays (aura + lightning)
-      const headY = spriteY + 12;
-      const bodyTop = spriteY + 30;
 
       // Aura
       if (form.aura) {
         const auraPulse = 1.1 + Math.sin(frame * 0.12) * 0.25;
         ctx.save();
-        ctx.translate(player.x, headY - 8);
+        ctx.translate(player.x, dy + targetHeight / 2);
         ctx.scale(auraPulse, auraPulse * 0.65);
-        ctx.fillStyle = form.auraColor;
+        ctx.fillStyle = form.color + '44';
         ctx.beginPath();
-        ctx.ellipse(0, 0, 30, 42, 0, 0, 2 * Math.PI);
+        ctx.ellipse(0, 0, targetHeight / 1.5, targetHeight, 0, 0, 2 * Math.PI);
         ctx.fill();
         ctx.restore();
       }
 
-      // Animated lightning for SSJ2 (extra visible)
+      // Draw sprite if loaded
+      if (img.complete) {
+        const scale = targetHeight / img.height;
+        const dw = img.width * scale;
+        const dh = targetHeight;
+        dx = player.x - dw / 2;
+        ctx.drawImage(img, dx, dy, dw, dh);
+      }
+
+      // Lightning for SSJ2
       if (form.lightning) {
         ctx.strokeStyle = '#ffd700';
-        ctx.lineWidth = 3.5;
+        ctx.lineWidth = 3;
         ctx.lineCap = 'round';
         const lPhase = frame * 0.4;
         // Left bolt
         ctx.beginPath();
-        ctx.moveTo(player.x - 10, headY + 12);
-        ctx.lineTo(player.x - 18 + Math.sin(lPhase) * 3, headY + 4);
-        ctx.lineTo(player.x - 22, headY - 6);
-        ctx.lineTo(player.x - 28 + Math.cos(lPhase) * 4, headY - 2);
+        ctx.moveTo(player.x - 10, dy + targetHeight - 10);
+        ctx.lineTo(player.x - 18 + Math.sin(lPhase) * 3, dy + 4);
+        ctx.lineTo(player.x - 22, dy - 6);
+        ctx.lineTo(player.x - 28 + Math.cos(lPhase) * 4, dy - 2);
         ctx.stroke();
         // Right bolt
         ctx.beginPath();
-        ctx.moveTo(player.x + 12, headY + 10);
-        ctx.lineTo(player.x + 20 + Math.sin(lPhase + 1) * 3, headY + 0);
-        ctx.lineTo(player.x + 14, headY - 8);
-        ctx.lineTo(player.x + 24 + Math.cos(lPhase + 2) * 4, headY - 4);
+        ctx.moveTo(player.x + 12, dy + 10);
+        ctx.lineTo(player.x + 20 + Math.sin(lPhase + 1) * 3, dy + 0);
+        ctx.lineTo(player.x + 14, dy - 8);
+        ctx.lineTo(player.x + 24 + Math.cos(lPhase + 2) * 4, dy - 4);
         ctx.stroke();
         // Body bolt
         ctx.beginPath();
-        ctx.moveTo(player.x + 3, bodyTop + 8);
-        ctx.lineTo(player.x + 12 + Math.sin(lPhase + 3) * 4, bodyTop - 4);
-        ctx.lineTo(player.x + 6, bodyTop + 2);
-        ctx.stroke();
-        // Extra small bolts for more flash
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(player.x - 5, headY - 10);
-        ctx.lineTo(player.x - 12 + Math.sin(lPhase * 1.5) * 5, headY - 20);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(player.x + 8, headY - 5);
-        ctx.lineTo(player.x + 15 + Math.cos(lPhase * 1.2) * 4, headY - 18);
+        ctx.moveTo(player.x + 3, dy + targetHeight / 2 + 8);
+        ctx.lineTo(player.x + 12 + Math.sin(lPhase + 3) * 4, dy + targetHeight / 2 - 4);
+        ctx.lineTo(player.x + 6, dy + targetHeight / 2 + 2);
         ctx.stroke();
       }
     }
 
     function restart() {
-      obstacles = []; clouds = []; player.y = GROUND_Y; player.vy = 0; player.jumping = false; player.ducking = false;
-      player.animFrame = 0; player.bob = 0; score = 0; currentDistance = 0; speed = 6; speedUps = 0; currentFormIdx = 0;
-      obTimer = 0; obGap = 150; groundOffset = 0; gameOver = false; scoreEl.innerText = '0'; formEl.innerText = forms[0].name;
-      for (let i = 0; i < 4; i++) clouds.push({x: 100 + i * 220, y: 30 + Math.random() * 35, size: 18 + Math.random() * 15});
+      obstacles = [];
+      clouds = [];
+      player.x = 80;
+      player.y = GROUND_Y;
+      player.vy = 0;
+      player.jumping = false;
+      player.ducking = false;
+      player.animFrame = 0;
+      score = 0;
+      currentDistance = 0;
+      speed = 5;
+      speedUps = 0;
+      currentFormIdx = 0;
+      obTimer = 0;
+      obGap = 200;
+      groundOffset = 0;
+      gameOver = false;
+      scoreEl.innerText = '0';
+      formEl.innerText = forms[0].name;
+      // Initial clouds - fixed the loop typo
+      for (let i = 0; i < 4; i++) {
+        clouds.push({
+          x: 100 + i * 220,
+          y: 30 + Math.random() * 35,
+          size: 18 + Math.random() * 15
+        });
+      }
     }
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Sky gradient
       const skyGrad = ctx.createLinearGradient(0, 0, 0, GROUND_Y);
-      skyGrad.addColorStop(0, '#4a90e2'); skyGrad.addColorStop(0.6, '#87ceeb'); skyGrad.addColorStop(1, '#d4f1ff');
-      ctx.fillStyle = skyGrad; ctx.fillRect(0, 0, canvas.width, GROUND_Y);
+      skyGrad.addColorStop(0, '#4a90e2');
+      skyGrad.addColorStop(0.6, '#87ceeb');
+      skyGrad.addColorStop(1, '#d4f1ff');
+      ctx.fillStyle = skyGrad;
+      ctx.fillRect(0, 0, canvas.width, GROUND_Y);
+
+      // Clouds
       clouds.forEach(drawCloud);
+
+      // Obstacles
       obstacles.forEach(drawObstacle);
-      ctx.fillStyle = '#f0e8d8'; ctx.fillRect(0, GROUND_Y, canvas.width, canvas.height - GROUND_Y);
-      ctx.strokeStyle = '#d4af37'; ctx.lineWidth = 4;
+
+      // Ground
+      ctx.fillStyle = '#f0e8d8';
+      ctx.fillRect(0, GROUND_Y, canvas.width, canvas.height - GROUND_Y);
+
+      // Ground lines
+      ctx.strokeStyle = '#d4af37';
+      ctx.lineWidth = 4;
+      ctx.lineCap = 'round';
       for (let x = groundOffset - 40; x < canvas.width + 40; x += 40) {
-        ctx.beginPath(); ctx.moveTo(x, GROUND_Y - 2); ctx.lineTo(x + 20, GROUND_Y - 2); ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x, GROUND_Y - 2);
+        ctx.lineTo(x + 20, GROUND_Y - 2);
+        ctx.stroke();
       }
+
+      // Player
       drawPlayer();
 
+      // Overlays
       if (!gameStarted) {
-        ctx.fillStyle = 'rgba(0,0,0,0.65)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#ffd700'; ctx.font = 'bold 50px Arial'; ctx.textAlign = 'center';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#ffd700';
+        ctx.font = 'bold 50px Arial';
+        ctx.textAlign = 'center';
         ctx.fillText('GOKU RUNNER', canvas.width / 2, canvas.height / 2 - 50);
-        ctx.font = 'bold 26px Arial'; ctx.fillStyle = '#fff';
+        ctx.font = 'bold 26px Arial';
+        ctx.fillStyle = '#fff';
         ctx.fillText('Dodge rocks & ki blasts to transform!', canvas.width / 2, canvas.height / 2 - 10);
         ctx.font = '20px Arial';
         ctx.fillText('JUMP: SPACE or ↑    DUCK: ↓', canvas.width / 2, canvas.height / 2 + 30);
         ctx.fillText('Get far to go Super Saiyan & beyond!', canvas.width / 2, canvas.height / 2 + 60);
       } else if (gameOver) {
-        ctx.fillStyle = 'rgba(51,51,51,0.8)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#ff4444'; ctx.font = 'bold 52px Arial'; ctx.textAlign = 'center';
+        ctx.fillStyle = 'rgba(51, 51, 51, 0.8)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#ff4444';
+        ctx.font = 'bold 52px Arial';
+        ctx.textAlign = 'center';
         ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 40);
-        ctx.fillStyle = '#fff'; ctx.font = 'bold 34px Arial';
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 34px Arial';
         ctx.fillText(`Score: ${score}`, canvas.width / 2, canvas.height / 2 + 5);
-        if (score > hiScore) { ctx.fillStyle = '#ffd700'; ctx.font = 'bold 28px Arial'; ctx.fillText('NEW HIGH SCORE!', canvas.width / 2, canvas.height / 2 + 45); }
-        ctx.fillStyle = '#fff'; ctx.font = 'bold 24px Arial';
+        if (score > hiScore) {
+          ctx.fillStyle = '#ffd700';
+          ctx.font = 'bold 28px Arial';
+          ctx.fillText('NEW HIGH SCORE!', canvas.width / 2, canvas.height / 2 + 45);
+        }
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 24px Arial';
         ctx.fillText('SPACEBAR to restart', canvas.width / 2, canvas.height / 2 + 85);
       }
       ctx.textAlign = 'start';
@@ -273,64 +398,113 @@
       frame++;
       player.animFrame++;
 
-      if (!gameStarted && keys[32]) { gameStarted = true; keys[32] = false; }
-      if (gameOver && keys[32]) { restart(); keys[32] = false; }
+      // Input handling for start/restart
+      if (!gameStarted && keys[32]) {
+        gameStarted = true;
+        keys[32] = false;
+      }
+      if (gameOver && keys[32]) {
+        restart();
+        keys[32] = false;
+      }
 
       if (gameStarted && !gameOver) {
-        if ((keys[32] || keys[38]) && !player.jumping) { player.vy = -14.5; player.jumping = true; player.ducking = false; }
+        // Jump input
+        if ((keys[32] || keys[38]) && !player.jumping) {
+          player.vy = -14.5;
+          player.jumping = true;
+          player.ducking = false;
+        }
+        // Duck input
         player.ducking = keys[40] && !player.jumping;
 
-        if (player.jumping) { player.y += player.vy; player.vy += 0.75; if (player.y >= GROUND_Y) { player.y = GROUND_Y; player.vy = 0; player.jumping = false; }}
+        // Player physics
+        if (player.jumping) {
+          player.y += player.vy;
+          player.vy += 0.75;
+          if (player.y >= GROUND_Y) {
+            player.y = GROUND_Y;
+            player.vy = 0;
+            player.jumping = false;
+          }
+        }
 
-        // Running bob
-        if (!player.jumping && !player.ducking) player.bob = Math.sin(frame * 0.25) * 2.5;
-        else player.bob = 0;
+        // Ground offset
+        groundOffset -= speed;
+        if (groundOffset < -40) groundOffset += 40;
 
-        groundOffset -= speed; if (groundOffset < -40) groundOffset += 40;
-        obstacles.forEach(o => o.x -= speed); obstacles = obstacles.filter(o => o.x + o.width > -20);
-        clouds.forEach(c => c.x -= speed * 0.4); clouds = clouds.filter(c => c.x + c.size * 2 > -20);
-        if (frame % 160 === 0) addCloud();
+        // Move obstacles
+        obstacles.forEach(o => o.x -= speed);
+        obstacles = obstacles.filter(o => o.x + o.width > -20);
 
+        // Move clouds
+        clouds.forEach(c => c.x -= speed * 0.4);
+        clouds = clouds.filter(c => c.x + c.size * 2 > -20);
+
+        // Add cloud
+        if (frame % 160 === 0) {
+          addCloud();
+        }
+
+        // Add obstacle
         obTimer++;
         if (obTimer >= obGap) {
-          obTimer = 0; obGap = Math.max(65, 140 - score * 0.015);
+          obTimer = 0;
+          obGap = Math.max(100, 200 - score * 0.005); // More gradual obstacle frequency increase
           const addX = Math.random() * 25;
           const randType = Math.random();
           if (randType < 0.72) {
+            // Ground
             const isDouble = Math.random() < 0.4;
-            const h1 = 24 + Math.random() * 32; const w1 = 16 + Math.random() * 14;
+            const h1 = 24 + Math.random() * 32;
+            const w1 = 16 + Math.random() * 14;
             obstacles.push({x: canvas.width + addX, y: GROUND_Y - h1, width: w1, height: h1, type: 'ground'});
             if (isDouble) {
-              const h2 = 22 + Math.random() * 28; const w2 = 15 + Math.random() * 12;
+              const h2 = 22 + Math.random() * 28;
+              const w2 = 15 + Math.random() * 12;
               const gapX = 38 + Math.random() * 35;
               obstacles.push({x: canvas.width + addX + gapX, y: GROUND_Y - h2, width: w2, height: h2, type: 'ground'});
             }
           } else {
+            // Air
             obstacles.push({x: canvas.width + addX, y: GROUND_Y - 60, width: 40, height: 25, type: 'air'});
           }
         }
 
+        // Update distance and score
         currentDistance += speed;
         const newScore = Math.floor(currentDistance / 10);
         if (newScore > score) {
-          score = newScore; scoreEl.innerText = score;
+          score = newScore;
+          scoreEl.innerText = score;
           const newFormIdx = getCurrentForm(score);
-          if (newFormIdx > currentFormIdx) { currentFormIdx = newFormIdx; formEl.innerText = forms[newFormIdx].name; }
+          if (newFormIdx > currentFormIdx) {
+            currentFormIdx = newFormIdx;
+            formEl.innerText = forms[newFormIdx].name;
+          }
+          // Speed up every 100 points - more gradual
           if (newScore % 100 === 0) {
             const thisUp = Math.floor(newScore / 100);
-            if (thisUp > speedUps) { speedUps = thisUp; speed += 0.32 + (thisUp * 0.03); }
+            if (thisUp > speedUps) {
+              speedUps = thisUp;
+              speed += 0.15 + (thisUp * 0.01); // Smaller increment for gradual speed up
+            }
           }
         }
 
-        // Collision
-        const pHeight = player.ducking && !player.jumping ? DUCK_HEIGHT : NORMAL_HEIGHT;
+        // Collision detection
+        const pHeight = player.ducking ? 40 : 60;
         const pTop = player.y - pHeight;
-        const pRect = {x: player.x - PLAYER_WIDTH / 2, y: pTop, width: PLAYER_WIDTH, height: pHeight};
+        const pRect = {x: player.x - 30, y: pTop, width: 60, height: pHeight}; // Adjusted hitbox for sprites
         for (let ob of obstacles) {
           const obRect = {x: ob.x, y: ob.y, width: ob.width, height: ob.height};
           if (collide(pRect, obRect)) {
             gameOver = true;
-            if (score > hiScore) { hiScore = score; hiScoreEl.innerText = hiScore; localStorage.setItem('gokuHiScore', hiScore.toString()); }
+            if (score > hiScore) {
+              hiScore = score;
+              hiScoreEl.innerText = hiScore;
+              localStorage.setItem('gokuHiScore', hiScore.toString());
+            }
             break;
           }
         }
@@ -340,14 +514,31 @@
       requestAnimationFrame(gameLoop);
     }
 
-    // Input (keyboard/mouse/touch)
-    canvas.addEventListener('touchstart', e => { e.preventDefault(); keys[32] = true; }, {passive: false});
-    canvas.addEventListener('touchend', () => keys[32] = false);
-    document.addEventListener('keydown', e => { if (e.keyCode === 32) e.preventDefault(); keys[e.keyCode] = true; });
-    document.addEventListener('keyup', e => keys[e.keyCode] = false);
-    canvas.addEventListener('mousedown', () => keys[32] = true);
-    canvas.addEventListener('mouseup', () => keys[32] = false);
+    // Touch support for mobile
+    canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      keys[32] = true;
+    }, {passive: false});
+    canvas.addEventListener('touchend', () => {
+      keys[32] = false;
+    });
 
+    // Keyboard + Mouse input
+    document.addEventListener('keydown', (e) => {
+      if (e.keyCode === 32) e.preventDefault(); // Stop page scroll on SPACE
+      keys[e.keyCode] = true;
+    });
+    document.addEventListener('keyup', (e) => {
+      keys[e.keyCode] = false;
+    });
+    canvas.addEventListener('mousedown', () => {
+      keys[32] = true;
+    });
+    canvas.addEventListener('mouseup', () => {
+      keys[32] = false;
+    });
+
+    // Start the game loop
     gameLoop();
   </script>
 </body>
